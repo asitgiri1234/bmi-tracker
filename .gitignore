@@ -1,0 +1,21 @@
+*.iml
+.gradle/
+local.properties
+.idea/
+.DS_Store
+build/
+captures/
+.externalNativeBuild/
+.cxx/
+*.apk
+*.aab
+
+# Signing material must never be committed.
+*.jks
+*.keystore
+keystore.properties
+
+# Firebase config is kept out of this public repo. It ships in the submission
+# archive instead, so a reviewer can build without creating their own Firebase
+# project. See README "Firebase setup" for how to regenerate it.
+app/google-services.json
