@@ -21,28 +21,31 @@ class WeightHistoryTest {
 
     @Test
     fun `empty input produces an empty series`() {
-        assertTrue(WeightHistory.dailySeries(emptyList(), today = today, zone = zone).isEmpty())
+        assertTrue(WeightHistory.seriesFor(emptyList(), today = today, zone = zone).isEmpty())
     }
 
     @Test
-    fun `keeps one point per day`() {
+    fun `keeps every measurement on the same day`() {
+        // Collapsing same-day entries would mean the chart could not show a
+        // line until the app had been used across two calendar days.
         val entries = listOf(
             entry(today, 8, 70.0),
             entry(today, 20, 71.0),
         )
-        val series = WeightHistory.dailySeries(entries, today = today, zone = zone)
-        assertEquals(1, series.size)
+        val series = WeightHistory.seriesFor(entries, today = today, zone = zone)
+        assertEquals(2, series.size)
+        assertEquals(listOf(70.0, 71.0), series.map { it.weightKg })
     }
 
     @Test
-    fun `the last reading of a day wins`() {
+    fun `orders same-day entries by time`() {
         val entries = listOf(
-            entry(today, 8, 70.0),
             entry(today, 20, 71.5),
+            entry(today, 8, 70.0),
             entry(today, 12, 70.8),
         )
-        val series = WeightHistory.dailySeries(entries, today = today, zone = zone)
-        assertEquals(71.5, series.single().weightKg, 0.001)
+        val series = WeightHistory.seriesFor(entries, today = today, zone = zone)
+        assertEquals(listOf(70.0, 70.8, 71.5), series.map { it.weightKg })
     }
 
     @Test
@@ -51,7 +54,7 @@ class WeightHistoryTest {
             entry(today.minusDays(10), 8, 80.0),
             entry(today.minusDays(2), 8, 70.0),
         )
-        val series = WeightHistory.dailySeries(entries, days = 7, today = today, zone = zone)
+        val series = WeightHistory.seriesFor(entries, days = 7, today = today, zone = zone)
         assertEquals(1, series.size)
         assertEquals(70.0, series.single().weightKg, 0.001)
     }
@@ -60,32 +63,29 @@ class WeightHistoryTest {
     fun `includes the oldest day inside the window`() {
         // A 7-day window counts back from today inclusive, so today-6 is in.
         val entries = listOf(entry(today.minusDays(6), 8, 68.0))
-        val series = WeightHistory.dailySeries(entries, days = 7, today = today, zone = zone)
-        assertEquals(1, series.size)
+        assertEquals(1, WeightHistory.seriesFor(entries, days = 7, today = today, zone = zone).size)
     }
 
     @Test
     fun `excludes the day just outside the window`() {
         val entries = listOf(entry(today.minusDays(7), 8, 68.0))
-        val series = WeightHistory.dailySeries(entries, days = 7, today = today, zone = zone)
-        assertTrue(series.isEmpty())
+        assertTrue(WeightHistory.seriesFor(entries, days = 7, today = today, zone = zone).isEmpty())
     }
 
     @Test
     fun `excludes future entries`() {
         val entries = listOf(entry(today.plusDays(1), 8, 68.0))
-        val series = WeightHistory.dailySeries(entries, today = today, zone = zone)
-        assertTrue(series.isEmpty())
+        assertTrue(WeightHistory.seriesFor(entries, today = today, zone = zone).isEmpty())
     }
 
     @Test
-    fun `returns points in ascending date order`() {
+    fun `returns points in ascending order across days`() {
         val entries = listOf(
             entry(today, 8, 70.0),
             entry(today.minusDays(3), 8, 72.0),
             entry(today.minusDays(1), 8, 71.0),
         )
-        val series = WeightHistory.dailySeries(entries, today = today, zone = zone)
+        val series = WeightHistory.seriesFor(entries, today = today, zone = zone)
         assertEquals(listOf(today.minusDays(3), today.minusDays(1), today), series.map { it.date })
     }
 
@@ -96,7 +96,7 @@ class WeightHistoryTest {
             entry(today.minusDays(4), 8, 72.0),
             entry(today, 8, 70.0),
         )
-        val series = WeightHistory.dailySeries(entries, today = today, zone = zone)
+        val series = WeightHistory.seriesFor(entries, today = today, zone = zone)
         assertEquals(2, series.size)
         assertTrue(series.none { it.weightKg == 0.0 })
     }
@@ -104,6 +104,6 @@ class WeightHistoryTest {
     @Test
     fun `a non-positive window is empty`() {
         val entries = listOf(entry(today, 8, 70.0))
-        assertTrue(WeightHistory.dailySeries(entries, days = 0, today = today, zone = zone).isEmpty())
+        assertTrue(WeightHistory.seriesFor(entries, days = 0, today = today, zone = zone).isEmpty())
     }
 }

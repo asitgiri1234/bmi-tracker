@@ -68,7 +68,7 @@ class DashboardViewModel @Inject constructor(
     ): DashboardUiState.Ready {
         val bmi = latest?.let { BmiCalculator.calculate(it.weightKg, profile.heightCm) }
         val healthyRange = BmiCalculator.healthyWeightRangeKg(profile.heightCm)
-        val series = WeightHistory.dailySeries(recentEntries, days = 7)
+        val series = WeightHistory.seriesFor(recentEntries, days = 7)
 
         return DashboardUiState.Ready(
             profileName = profile.name,
@@ -90,8 +90,12 @@ class DashboardViewModel @Inject constructor(
                 healthyRange?.let { range -> buildAdvice(entry.weightKg, range, profile) }
             },
             weightHistory = series.mapIndexed { index, point ->
+                val label = point.date.format(DAY_LABEL)
+                // Blank a repeated weekday so several readings on one day do
+                // not print "Mon Mon Mon" along the axis.
+                val previous = series.getOrNull(index - 1)?.date?.format(DAY_LABEL)
                 WeightChartPoint(
-                    label = point.date.format(DAY_LABEL),
+                    label = if (label == previous) "" else label,
                     value = UnitConverter.kgToDisplay(point.weightKg, profile.weightUnit),
                     isLatest = index == series.lastIndex,
                 )

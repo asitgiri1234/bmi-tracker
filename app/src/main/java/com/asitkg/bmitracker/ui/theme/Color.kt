@@ -15,6 +15,21 @@ val SurfaceLight = Color(0xFFFAFDFC)
 val SurfaceDark = Color(0xFF0E1415)
 val ErrorRed = Color(0xFFBA1A1A)
 
+// Foreground roles. These must be set explicitly: Material 3 fills any role
+// left unspecified from its own baseline palette, which is purple, so a
+// half-defined scheme leaks purple text onto brand-coloured buttons.
+val OnPrimaryLight = Color(0xFFFFFFFF)
+val OnPrimaryDark = Color(0xFF00363A)
+val OnSurfaceLight = Color(0xFF191C1C)
+val OnSurfaceDark = Color(0xFFE0E3E2)
+val SurfaceVariantLight = Color(0xFFDAE5E4)
+val SurfaceVariantDark = Color(0xFF3F4948)
+val OnSurfaceVariantLight = Color(0xFF3F4948)
+val OnSurfaceVariantDark = Color(0xFFBEC9C8)
+val OutlineVariantLight = Color(0xFFBEC9C8)
+val OutlineVariantDark = Color(0xFF3F4948)
+val OnErrorColor = Color(0xFFFFFFFF)
+
 // BMI category colours. Deliberately distinguishable in both themes and
 // ordered cool -> warm so the gauge reads intuitively.
 val CategoryUnderweight = Color(0xFF4B9FE1)
