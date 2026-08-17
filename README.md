@@ -12,8 +12,9 @@ Built for the IV Innovations application assignment.
 | # | Feature | State |
 |---|---------|-------|
 | 0 | Project scaffold, theme, navigation graph | ✅ Done |
-| 1 | Login screen — Google sign-in | 🚧 In progress |
-| 2 | Account creation + password reset | 🚧 In progress |
+| — | Data layer + BMI domain core (22 unit tests) | ✅ Done |
+| 1 | Login screen — Google sign-in | ⬜ Planned |
+| 2 | Account creation + password reset | ⬜ Planned |
 | 3 | User details form + validation | ⬜ Planned |
 | 4 | BMI calculation + category display | ⬜ Planned |
 | 5 | Settings — update height/weight | ⬜ Planned |
@@ -121,10 +122,43 @@ fails with a confusing `Invalid file path`.
 app/src/main/java/com/asitkg/bmitracker/
 ├── BmiApplication.kt        # Hilt entry point
 ├── MainActivity.kt          # Single activity, Compose host
+├── domain/                  # Pure Kotlin — no Android imports
+│   ├── BmiCalculator.kt     # BMI maths + healthy weight range
+│   ├── model/               # Profile, WeightEntry, units, categories
+│   └── repository/          # Interfaces the UI depends on
+├── data/
+│   ├── local/               # Room database, entities, DAOs
+│   ├── mapper/              # Entity <-> domain translation
+│   ├── preferences/         # DataStore (active profile)
+│   └── repository/          # Room-backed implementations
+├── di/                      # Hilt modules
 └── ui/
     ├── navigation/          # Routes + NavHost
     └── theme/               # Material 3 colours, typography
 ```
+
+### Two decisions worth knowing
+
+**Storage is always canonical.** Weight is persisted in kilograms and height in
+centimetres; KG/LBS and CM/FT-IN are display preferences converted at the UI
+edge. A unit toggle therefore cannot corrupt stored data — the round-trip is
+covered by tests.
+
+**There is no weight column on a profile.** Current weight is the most recent
+`WeightEntry`, so updating weight and appending to the history graph are the
+same write. The dashboard reading and the chart can never disagree.
+
+---
+
+## Testing
+
+```bash
+./gradlew :app:testDebugUnitTest
+```
+
+22 tests cover BMI arithmetic, WHO category boundaries, and unit conversions —
+including that category bands are contiguous (no BMI can fall between two
+categories) and that unit round-trips are lossless.
 
 ---
 

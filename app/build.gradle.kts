@@ -33,6 +33,9 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+        // java.time is API 26+; desugaring keeps it available down to minSdk 24
+        // so date handling does not degrade to raw epoch arithmetic.
+        isCoreLibraryDesugaringEnabled = true
     }
 
     buildFeatures {
@@ -50,6 +53,8 @@ kotlin {
 }
 
 dependencies {
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)
 
