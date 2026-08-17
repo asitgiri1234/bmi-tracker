@@ -30,6 +30,23 @@ val OutlineVariantLight = Color(0xFFBEC9C8)
 val OutlineVariantDark = Color(0xFF3F4948)
 val OnErrorColor = Color(0xFFFFFFFF)
 
+// Container roles. Components such as SegmentedButton colour their selected
+// state from *Container rather than from the base role, so these must be set
+// too or the same purple baseline leaks through.
+val PrimaryContainerLight = Color(0xFF9CF1F0)
+val OnPrimaryContainerLight = Color(0xFF002020)
+val SecondaryContainerLight = Color(0xFFCCE8E7)
+val OnSecondaryContainerLight = Color(0xFF051F1F)
+val TertiaryContainerLight = Color(0xFFDDE1FF)
+val OnTertiaryContainerLight = Color(0xFF001945)
+
+val PrimaryContainerDark = Color(0xFF004F52)
+val OnPrimaryContainerDark = Color(0xFF9CF1F0)
+val SecondaryContainerDark = Color(0xFF324B4B)
+val OnSecondaryContainerDark = Color(0xFFCCE8E7)
+val TertiaryContainerDark = Color(0xFF344578)
+val OnTertiaryContainerDark = Color(0xFFDDE1FF)
+
 // BMI category colours. Deliberately distinguishable in both themes and
 // ordered cool -> warm so the gauge reads intuitively.
 val CategoryUnderweight = Color(0xFF4B9FE1)
