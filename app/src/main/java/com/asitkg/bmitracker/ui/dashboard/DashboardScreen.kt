@@ -168,6 +168,21 @@ private fun ReadyContent(
             )
         }
 
+        Card(modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(
+                    text = "Weight history",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Spacer(Modifier.height(8.dp))
+                WeightChart(
+                    points = state.weightHistory,
+                    unitLabel = state.weightUnit.label,
+                )
+            }
+        }
+
         state.healthyRangeDisplay?.let { range ->
             Card(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.padding(16.dp)) {

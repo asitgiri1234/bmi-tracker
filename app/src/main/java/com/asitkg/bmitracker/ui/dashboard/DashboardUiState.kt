@@ -22,5 +22,7 @@ sealed interface DashboardUiState {
         val healthyRangeDisplay: String?,
         /** Signed difference from the nearest healthy bound, already formatted. */
         val advice: String?,
+        /** Last seven days, oldest first; empty until measurements exist. */
+        val weightHistory: List<WeightChartPoint> = emptyList(),
     ) : DashboardUiState
 }

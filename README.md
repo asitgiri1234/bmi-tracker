@@ -17,8 +17,8 @@ Built for the IV Innovations application assignment.
 | 4 | BMI calculation + category display | ✅ Done |
 | 1 | Login screen — Google sign-in | ✅ Done |
 | 2 | Account creation + password reset | ✅ Done |
+| 6 | Weight history graph | ✅ Done |
 | 5 | Settings — update height/weight | ⬜ Planned |
-| 6 | Weight history graph | ⬜ Planned |
 | 7 | Multi-user profiles | ⬜ Planned |
 
 Bonus: authentication state persists across restarts.
@@ -37,7 +37,7 @@ Bonus: authentication state persists across restarts.
 | Google sign-in | Credential Manager 1.6.0 | Current API; `GoogleSignInClient` is deprecated |
 | Local storage | Room 2.8.4 | The assignment's "CoreData or alternative" |
 | Preferences | DataStore 1.2.1 | Active profile, unit preference |
-| Charts | Vico 3.3.0 | Compose-native, customizable |
+| Charts | Compose `Canvas` (no library) | See note below |
 | Build | AGP 9.3.1 / Gradle 9.7.0 | |
 
 Versions are centralised in [`gradle/libs.versions.toml`](gradle/libs.versions.toml).
@@ -182,6 +182,26 @@ current default — a wrong password and an unknown account both return
 `ERROR_INVALID_CREDENTIAL`, so both show the same message. Distinguishing them
 would tell an attacker which email addresses have accounts. Password reset
 reports success for unregistered addresses for the same reason.
+
+## Charts
+
+Both the BMI gauge and the weight-history chart are drawn directly on a Compose
+`Canvas` rather than through a charting library. The shapes needed are simple,
+owning the drawing keeps both consistent with the app's theme, and it avoids a
+dependency used on one screen.
+
+Series construction lives in `domain/WeightHistory.kt`, separate from the
+drawing, so the awkward cases are unit-tested rather than eyeballed:
+
+- **Several weigh-ins in one day** — the last reading of the day wins, matching
+  "current weight is the most recent entry"
+- **Days with no measurement** are omitted, not zero-filled; a zero would plot
+  as a spike to the chart floor
+- **Entries outside the 7-day window**, including future-dated ones, are excluded
+
+The chart also handles the two states that break naive implementations: an empty
+series, and a single point — which has no line to draw and no range, so it shows
+the value as text instead of a degenerate chart.
 
 ## Input validation
 

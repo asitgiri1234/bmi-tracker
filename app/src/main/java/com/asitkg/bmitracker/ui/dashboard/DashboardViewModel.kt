@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.asitkg.bmitracker.data.preferences.UserPreferencesRepository
 import com.asitkg.bmitracker.domain.BmiCalculator
+import com.asitkg.bmitracker.domain.WeightHistory
 import com.asitkg.bmitracker.domain.model.BmiCategory
 import com.asitkg.bmitracker.domain.model.HeightUnit
 import com.asitkg.bmitracker.domain.model.Profile
@@ -19,6 +20,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 import kotlin.math.abs
 import kotlin.math.roundToInt
@@ -43,11 +45,12 @@ class DashboardViewModel @Inject constructor(
                 combine(
                     profileRepository.observeProfile(profileId),
                     weightRepository.observeLatest(profileId),
-                ) { profile, latestWeight ->
+                    weightRepository.observeRecentEntries(profileId, days = 7),
+                ) { profile, latestWeight, recentEntries ->
                     if (profile == null) {
                         DashboardUiState.NoProfile
                     } else {
-                        buildReadyState(profile, latestWeight)
+                        buildReadyState(profile, latestWeight, recentEntries)
                     }
                 }
             }
@@ -58,9 +61,14 @@ class DashboardViewModel @Inject constructor(
             initialValue = DashboardUiState.Loading,
         )
 
-    private fun buildReadyState(profile: Profile, latest: WeightEntry?): DashboardUiState.Ready {
+    private fun buildReadyState(
+        profile: Profile,
+        latest: WeightEntry?,
+        recentEntries: List<WeightEntry>,
+    ): DashboardUiState.Ready {
         val bmi = latest?.let { BmiCalculator.calculate(it.weightKg, profile.heightCm) }
         val healthyRange = BmiCalculator.healthyWeightRangeKg(profile.heightCm)
+        val series = WeightHistory.dailySeries(recentEntries, days = 7)
 
         return DashboardUiState.Ready(
             profileName = profile.name,
@@ -80,6 +88,13 @@ class DashboardViewModel @Inject constructor(
             },
             advice = latest?.let { entry ->
                 healthyRange?.let { range -> buildAdvice(entry.weightKg, range, profile) }
+            },
+            weightHistory = series.mapIndexed { index, point ->
+                WeightChartPoint(
+                    label = point.date.format(DAY_LABEL),
+                    value = UnitConverter.kgToDisplay(point.weightKg, profile.weightUnit),
+                    isLatest = index == series.lastIndex,
+                )
             },
         )
     }
@@ -125,4 +140,9 @@ class DashboardViewModel @Inject constructor(
         } else {
             String.format("%.1f", value)
         }
+
+    private companion object {
+        /** Short weekday, e.g. "Mon" — readable at seven labels across. */
+        val DAY_LABEL: DateTimeFormatter = DateTimeFormatter.ofPattern("EEE")
+    }
 }
