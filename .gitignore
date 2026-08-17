@@ -15,6 +15,12 @@ captures/
 *.keystore
 keystore.properties
 
+# Submission archives bundle google-services.json, so they must never be
+# committed to this public repository. See SUBMISSION.md.
+*-submission.zip
+BMI-Tracker-*.zip
+/submission/
+
 # Firebase config is kept out of this public repo. It ships in the submission
 # archive instead, so a reviewer can build without creating their own Firebase
 # project. See README "Firebase setup" for how to regenerate it.
