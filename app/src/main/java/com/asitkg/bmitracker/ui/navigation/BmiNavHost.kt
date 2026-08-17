@@ -14,6 +14,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.asitkg.bmitracker.ui.dashboard.DashboardScreen
 import com.asitkg.bmitracker.ui.onboarding.UserDetailsScreen
 
 /**
@@ -28,9 +29,9 @@ fun BmiNavHost(
 ) {
     NavHost(
         navController = navController,
-        // Temporary while auth is unbuilt: start on the details form so the
-        // screen is reachable. Phase 1 restores SPLASH as the entry point.
-        startDestination = Routes.ONBOARDING,
+        // Temporary while auth is unbuilt: start on the dashboard, which routes
+        // to onboarding when no profile exists. Phase 1 restores SPLASH.
+        startDestination = Routes.DASHBOARD,
     ) {
         composable(Routes.SPLASH) { Placeholder("Splash", "Phase 1 — routes on persisted auth state") }
 
@@ -48,7 +49,11 @@ fun BmiNavHost(
                 },
             )
         }
-        composable(Routes.DASHBOARD) { Placeholder("Dashboard", "Phase 4 + 6") }
+        composable(Routes.DASHBOARD) {
+            DashboardScreen(
+                onAddDetails = { navController.navigate(Routes.ONBOARDING) },
+            )
+        }
         composable(Routes.SETTINGS) { Placeholder("Settings", "Phase 5") }
         composable(Routes.PROFILES) { Placeholder("Profiles", "Phase 7") }
         composable(Routes.PROFILE_EDIT) { Placeholder("Edit profile", "Phase 7") }

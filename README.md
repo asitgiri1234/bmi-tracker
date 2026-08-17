@@ -14,9 +14,9 @@ Built for the IV Innovations application assignment.
 | 0 | Project scaffold, theme, navigation graph | ✅ Done |
 | — | Data layer + BMI domain core | ✅ Done |
 | 3 | User details form + validation | ✅ Done |
+| 4 | BMI calculation + category display | ✅ Done |
 | 1 | Login screen — Google sign-in | ⬜ Planned |
 | 2 | Account creation + password reset | ⬜ Planned |
-| 4 | BMI calculation + category display | ⬜ Planned |
 | 5 | Settings — update height/weight | ⬜ Planned |
 | 6 | Weight history graph | ⬜ Planned |
 | 7 | Multi-user profiles | ⬜ Planned |
@@ -133,7 +133,10 @@ app/src/main/java/com/asitkg/bmitracker/
 │   └── repository/          # Room-backed implementations
 ├── di/                      # Hilt modules
 └── ui/
+    ├── components/          # Shared form controls
+    ├── dashboard/           # BMI display + gauge
     ├── navigation/          # Routes + NavHost
+    ├── onboarding/          # User details form
     └── theme/               # Material 3 colours, typography
 ```
 
