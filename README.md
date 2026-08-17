@@ -12,10 +12,10 @@ Built for the IV Innovations application assignment.
 | # | Feature | State |
 |---|---------|-------|
 | 0 | Project scaffold, theme, navigation graph | ✅ Done |
-| — | Data layer + BMI domain core (22 unit tests) | ✅ Done |
+| — | Data layer + BMI domain core | ✅ Done |
+| 3 | User details form + validation | ✅ Done |
 | 1 | Login screen — Google sign-in | ⬜ Planned |
 | 2 | Account creation + password reset | ⬜ Planned |
-| 3 | User details form + validation | ⬜ Planned |
 | 4 | BMI calculation + category display | ⬜ Planned |
 | 5 | Settings — update height/weight | ⬜ Planned |
 | 6 | Weight history graph | ⬜ Planned |
@@ -156,9 +156,28 @@ same write. The dashboard reading and the chart can never disagree.
 ./gradlew :app:testDebugUnitTest
 ```
 
-22 tests cover BMI arithmetic, WHO category boundaries, and unit conversions —
-including that category bands are contiguous (no BMI can fall between two
-categories) and that unit round-trips are lossless.
+44 tests cover BMI arithmetic, WHO category boundaries, unit conversions, and
+form validation — including that category bands are contiguous (no BMI can fall
+between two categories), that unit round-trips are lossless, and that the same
+plausibility limits apply whether input arrives in metric or imperial.
+
+## Input validation
+
+All validation lives in `domain/validation/ProfileValidator.kt`, separate from
+the UI so it is testable without an emulator. Rules:
+
+| Field | Rule |
+|---|---|
+| Name | Required, trimmed, max 40 characters |
+| Weight | Numeric, > 0, 2–650 kg after conversion |
+| Height | Numeric, 50–300 cm after conversion |
+| Inches | Must be < 12 — the remainder belongs in feet |
+| Date of birth | Optional; not in the future, within 120 years |
+
+Two details worth noting: values are checked **after** conversion to canonical
+units, so an out-of-range weight cannot slip through by being entered in pounds;
+and `,` is accepted as a decimal separator, since some keyboard locales give the
+user no period key.
 
 ---
 
