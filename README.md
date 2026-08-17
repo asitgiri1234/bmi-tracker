@@ -18,7 +18,7 @@ Built for the IV Innovations application assignment.
 | 1 | Login screen — Google sign-in | ✅ Done |
 | 2 | Account creation + password reset | ✅ Done |
 | 6 | Weight history graph | ✅ Done |
-| 5 | Settings — update height/weight | ⬜ Planned |
+| 5 | Settings — update height/weight | ✅ Done |
 | 7 | Multi-user profiles | ⬜ Planned |
 
 Bonus: authentication state persists across restarts.
@@ -139,6 +139,8 @@ app/src/main/java/com/asitkg/bmitracker/
     ├── dashboard/           # BMI display + gauge
     ├── navigation/          # Routes + NavHost
     ├── onboarding/          # User details form
+    ├── settings/            # Update height, weight, units
+    ├── splash/              # Auth-state routing
     └── theme/               # Material 3 colours, typography
 ```
 

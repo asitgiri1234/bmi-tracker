@@ -19,6 +19,7 @@ import com.asitkg.bmitracker.ui.auth.login.LoginScreen
 import com.asitkg.bmitracker.ui.auth.signup.SignUpScreen
 import com.asitkg.bmitracker.ui.dashboard.DashboardScreen
 import com.asitkg.bmitracker.ui.onboarding.UserDetailsScreen
+import com.asitkg.bmitracker.ui.settings.SettingsScreen
 import com.asitkg.bmitracker.ui.splash.SplashScreen
 import com.asitkg.bmitracker.ui.splash.StartDestination
 
@@ -89,10 +90,22 @@ fun BmiNavHost(
         composable(Routes.DASHBOARD) {
             DashboardScreen(
                 onAddDetails = { navController.navigate(Routes.ONBOARDING) },
+                onOpenSettings = { navController.navigate(Routes.SETTINGS) },
             )
         }
 
-        composable(Routes.SETTINGS) { Placeholder("Settings", "Phase 5") }
+        composable(Routes.SETTINGS) {
+            SettingsScreen(
+                onBack = { navController.popBackStack() },
+                onSignedOut = {
+                    navController.navigate(Routes.LOGIN) {
+                        // Clear the whole back stack: signing out must not leave
+                        // another account's screens reachable via back.
+                        popUpTo(0) { inclusive = true }
+                    }
+                },
+            )
+        }
         composable(Routes.PROFILES) { Placeholder("Profiles", "Phase 7") }
         composable(Routes.PROFILE_EDIT) { Placeholder("Edit profile", "Phase 7") }
     }
