@@ -15,11 +15,13 @@ Built for the IV Innovations application assignment.
 | — | Data layer + BMI domain core | ✅ Done |
 | 3 | User details form + validation | ✅ Done |
 | 4 | BMI calculation + category display | ✅ Done |
-| 1 | Login screen — Google sign-in | ⬜ Planned |
-| 2 | Account creation + password reset | ⬜ Planned |
+| 1 | Login screen — Google sign-in | ✅ Done |
+| 2 | Account creation + password reset | ✅ Done |
 | 5 | Settings — update height/weight | ⬜ Planned |
 | 6 | Weight history graph | ⬜ Planned |
 | 7 | Multi-user profiles | ⬜ Planned |
+
+Bonus: authentication state persists across restarts.
 
 ---
 
@@ -163,6 +165,23 @@ same write. The dashboard reading and the chart can never disagree.
 form validation — including that category bands are contiguous (no BMI can fall
 between two categories), that unit round-trips are lossless, and that the same
 plausibility limits apply whether input arrives in metric or imperial.
+
+## Authentication
+
+Firebase Auth with three entry points: email/password sign-in, registration, and
+password reset. Google sign-in uses **Credential Manager**, the current API —
+the older `GoogleSignInClient` is deprecated.
+
+Session state persists across restarts. Firebase stores the session itself, so
+the splash screen reads it on a cold start and routes a returning user straight
+to their dashboard.
+
+Firebase error codes are mapped to readable messages in `FirebaseAuthRepository`.
+One deliberate detail: with email enumeration protection enabled — Firebase's
+current default — a wrong password and an unknown account both return
+`ERROR_INVALID_CREDENTIAL`, so both show the same message. Distinguishing them
+would tell an attacker which email addresses have accounts. Password reset
+reports success for unregistered addresses for the same reason.
 
 ## Input validation
 

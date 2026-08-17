@@ -14,53 +14,91 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.asitkg.bmitracker.ui.auth.forgot.ForgotPasswordScreen
+import com.asitkg.bmitracker.ui.auth.login.LoginScreen
+import com.asitkg.bmitracker.ui.auth.signup.SignUpScreen
 import com.asitkg.bmitracker.ui.dashboard.DashboardScreen
 import com.asitkg.bmitracker.ui.onboarding.UserDetailsScreen
+import com.asitkg.bmitracker.ui.splash.SplashScreen
+import com.asitkg.bmitracker.ui.splash.StartDestination
 
-/**
- * Navigation skeleton.
- *
- * Destinations are wired up front so later phases only have to swap each
- * [Placeholder] for the real screen without touching routing.
- */
 @Composable
 fun BmiNavHost(
     navController: NavHostController = rememberNavController(),
 ) {
     NavHost(
         navController = navController,
-        // Temporary while auth is unbuilt: start on the dashboard, which routes
-        // to onboarding when no profile exists. Phase 1 restores SPLASH.
-        startDestination = Routes.DASHBOARD,
+        startDestination = Routes.SPLASH,
     ) {
-        composable(Routes.SPLASH) { Placeholder("Splash", "Phase 1 — routes on persisted auth state") }
+        composable(Routes.SPLASH) {
+            SplashScreen(
+                onDecided = { destination ->
+                    val route = when (destination) {
+                        StartDestination.Login -> Routes.LOGIN
+                        StartDestination.Onboarding -> Routes.ONBOARDING
+                        StartDestination.Dashboard -> Routes.DASHBOARD
+                        StartDestination.Undecided -> return@SplashScreen
+                    }
+                    navController.navigate(route) {
+                        // The splash screen must never be reachable via back.
+                        popUpTo(Routes.SPLASH) { inclusive = true }
+                    }
+                },
+            )
+        }
 
-        composable(Routes.LOGIN) { Placeholder("Login", "Phase 1") }
-        composable(Routes.SIGNUP) { Placeholder("Sign up", "Phase 1") }
-        composable(Routes.FORGOT_PASSWORD) { Placeholder("Reset password", "Phase 1") }
+        composable(Routes.LOGIN) {
+            LoginScreen(
+                onSignedIn = {
+                    navController.navigate(Routes.SPLASH) {
+                        // Route through splash again so it decides between
+                        // onboarding and dashboard in one place.
+                        popUpTo(Routes.LOGIN) { inclusive = true }
+                    }
+                },
+                onNavigateToSignUp = { navController.navigate(Routes.SIGNUP) },
+                onNavigateToForgotPassword = { navController.navigate(Routes.FORGOT_PASSWORD) },
+            )
+        }
+
+        composable(Routes.SIGNUP) {
+            SignUpScreen(
+                onSignedUp = {
+                    navController.navigate(Routes.ONBOARDING) {
+                        popUpTo(Routes.LOGIN) { inclusive = true }
+                    }
+                },
+                onBack = { navController.popBackStack() },
+            )
+        }
+
+        composable(Routes.FORGOT_PASSWORD) {
+            ForgotPasswordScreen(onBack = { navController.popBackStack() })
+        }
 
         composable(Routes.ONBOARDING) {
             UserDetailsScreen(
                 onSaved = {
                     navController.navigate(Routes.DASHBOARD) {
-                        // Onboarding is one-time; back must not return to it.
                         popUpTo(Routes.ONBOARDING) { inclusive = true }
                     }
                 },
             )
         }
+
         composable(Routes.DASHBOARD) {
             DashboardScreen(
                 onAddDetails = { navController.navigate(Routes.ONBOARDING) },
             )
         }
+
         composable(Routes.SETTINGS) { Placeholder("Settings", "Phase 5") }
         composable(Routes.PROFILES) { Placeholder("Profiles", "Phase 7") }
         composable(Routes.PROFILE_EDIT) { Placeholder("Edit profile", "Phase 7") }
     }
 }
 
-/** Temporary stand-in so the navigation graph is runnable before screens exist. */
+/** Temporary stand-in for destinations whose screens are not built yet. */
 @Composable
 private fun Placeholder(title: String, subtitle: String) {
     Column(

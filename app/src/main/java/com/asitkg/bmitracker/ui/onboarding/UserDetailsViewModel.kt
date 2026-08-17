@@ -8,9 +8,9 @@ import com.asitkg.bmitracker.domain.model.HeightUnit
 import com.asitkg.bmitracker.domain.model.Profile
 import com.asitkg.bmitracker.domain.model.UnitConverter
 import com.asitkg.bmitracker.domain.model.WeightUnit
+import com.asitkg.bmitracker.domain.repository.AuthRepository
 import com.asitkg.bmitracker.domain.repository.ProfileRepository
 import com.asitkg.bmitracker.domain.repository.WeightRepository
-import com.asitkg.bmitracker.domain.session.CurrentUserProvider
 import com.asitkg.bmitracker.domain.validation.ProfileValidator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,7 +26,7 @@ class UserDetailsViewModel @Inject constructor(
     private val profileRepository: ProfileRepository,
     private val weightRepository: WeightRepository,
     private val userPreferences: UserPreferencesRepository,
-    private val currentUserProvider: CurrentUserProvider,
+    private val authRepository: AuthRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(UserDetailsUiState())
@@ -108,13 +108,20 @@ class UserDetailsViewModel @Inject constructor(
             .valueOrNull ?: return
         val name = ProfileValidator.validateName(state.name).valueOrNull ?: return
 
+        val ownerUid = authRepository.currentUid
+        if (ownerUid == null) {
+            // Reachable only if the session expired while the form was open.
+            _uiState.update { it.copy(saveError = "Your session has expired. Please sign in again.") }
+            return
+        }
+
         _uiState.update { it.copy(isSaving = true, saveError = null) }
 
         viewModelScope.launch {
             runCatching {
                 val profileId = profileRepository.createProfile(
                     Profile(
-                        ownerUid = currentUserProvider.currentUid(),
+                        ownerUid = ownerUid,
                         name = name,
                         gender = state.gender,
                         dateOfBirth = state.dateOfBirth,
