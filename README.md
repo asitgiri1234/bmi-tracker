@@ -19,7 +19,7 @@ Built for the IV Innovations application assignment.
 | 2 | Account creation + password reset | ✅ Done |
 | 6 | Weight history graph | ✅ Done |
 | 5 | Settings — update height/weight | ✅ Done |
-| 7 | Multi-user profiles | ⬜ Planned |
+| 7 | Multi-user profiles | ✅ Done |
 
 Bonus: authentication state persists across restarts.
 
@@ -139,6 +139,7 @@ app/src/main/java/com/asitkg/bmitracker/
     ├── dashboard/           # BMI display + gauge
     ├── navigation/          # Routes + NavHost
     ├── onboarding/          # User details form
+    ├── profiles/            # Multi-user list, switching, editing
     ├── settings/            # Update height, weight, units
     ├── splash/              # Auth-state routing
     └── theme/               # Material 3 colours, typography
@@ -184,6 +185,24 @@ current default — a wrong password and an unknown account both return
 `ERROR_INVALID_CREDENTIAL`, so both show the same message. Distinguishing them
 would tell an attacker which email addresses have accounts. Password reset
 reports success for unregistered addresses for the same reason.
+
+## Multi-user
+
+One signed-in account owns any number of profiles — family members, for
+instance. Profiles are scoped by `ownerUid`, switched from the app bar, and each
+carries its own details, BMI, and weight history.
+
+Three edge cases are handled explicitly, since each would otherwise leave the
+app pointing at nothing:
+
+- **Deleting the active profile** selects another automatically
+- **Deleting the last profile** is prevented — the delete action is withheld
+  when only one remains
+- **A stale stored selection** (profile deleted, or belonging to a different
+  account) is re-resolved at startup by the splash screen
+
+Deleting a profile cascades to its weight entries at the database level, so no
+orphaned measurements survive.
 
 ## Charts
 

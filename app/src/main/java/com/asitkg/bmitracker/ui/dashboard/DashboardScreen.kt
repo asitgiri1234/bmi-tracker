@@ -17,6 +17,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.SwitchAccount
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -39,6 +40,7 @@ import com.asitkg.bmitracker.ui.theme.color
 fun DashboardScreen(
     onAddDetails: () -> Unit,
     onOpenSettings: () -> Unit,
+    onOpenProfiles: () -> Unit,
     viewModel: DashboardViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -48,6 +50,9 @@ fun DashboardScreen(
             TopAppBar(
                 title = { Text("BMI Tracker") },
                 actions = {
+                    IconButton(onClick = onOpenProfiles) {
+                        Icon(Icons.Filled.SwitchAccount, contentDescription = "Switch profile")
+                    }
                     IconButton(onClick = onOpenSettings) {
                         Icon(Icons.Filled.Settings, contentDescription = "Settings")
                     }

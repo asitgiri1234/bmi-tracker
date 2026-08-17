@@ -20,5 +20,9 @@ object Routes {
     const val DASHBOARD = "dashboard"
     const val SETTINGS = "settings"
     const val PROFILES = "profiles"
-    const val PROFILE_EDIT = "profile_edit"
+
+    const val PROFILE_ID_ARG = "profileId"
+    const val PROFILE_EDIT = "profile_edit/{$PROFILE_ID_ARG}"
+
+    fun profileEdit(profileId: Long): String = "profile_edit/$profileId"
 }
