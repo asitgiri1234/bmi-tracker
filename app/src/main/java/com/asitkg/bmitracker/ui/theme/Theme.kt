@@ -10,6 +10,11 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
+/**
+ * Every role is listed deliberately. Material 3 substitutes its own baseline
+ * palette for anything omitted, so a partial scheme shows purple wherever a
+ * component reads a role that was never set.
+ */
 private val LightColors = lightColorScheme(
     primary = Teal40,
     onPrimary = OnPrimaryLight,
@@ -23,15 +28,29 @@ private val LightColors = lightColorScheme(
     onTertiary = OnPrimaryLight,
     tertiaryContainer = TertiaryContainerLight,
     onTertiaryContainer = OnTertiaryContainerLight,
-    background = SurfaceLight,
+    background = BackgroundLight,
     onBackground = OnSurfaceLight,
-    surface = SurfaceLight,
+    surface = BackgroundLight,
     onSurface = OnSurfaceLight,
     surfaceVariant = SurfaceVariantLight,
     onSurfaceVariant = OnSurfaceVariantLight,
+    surfaceTint = Teal40,
+    surfaceBright = SurfaceBrightLight,
+    surfaceDim = SurfaceDimLight,
+    surfaceContainerLowest = SurfaceContainerLowestLight,
+    surfaceContainerLow = SurfaceContainerLowLight,
+    surfaceContainer = SurfaceContainerLight,
+    surfaceContainerHigh = SurfaceContainerHighLight,
+    surfaceContainerHighest = SurfaceContainerHighestLight,
+    inverseSurface = InverseSurfaceLight,
+    inverseOnSurface = InverseOnSurfaceLight,
+    inversePrimary = Teal80,
+    outline = OutlineLight,
     outlineVariant = OutlineVariantLight,
     error = ErrorRed,
     onError = OnErrorColor,
+    errorContainer = ErrorContainerLight,
+    onErrorContainer = OnErrorContainerLight,
 )
 
 private val DarkColors = darkColorScheme(
@@ -47,21 +66,35 @@ private val DarkColors = darkColorScheme(
     onTertiary = OnPrimaryDark,
     tertiaryContainer = TertiaryContainerDark,
     onTertiaryContainer = OnTertiaryContainerDark,
-    background = SurfaceDark,
+    background = BackgroundDark,
     onBackground = OnSurfaceDark,
-    surface = SurfaceDark,
+    surface = BackgroundDark,
     onSurface = OnSurfaceDark,
     surfaceVariant = SurfaceVariantDark,
     onSurfaceVariant = OnSurfaceVariantDark,
+    surfaceTint = Teal80,
+    surfaceBright = SurfaceBrightDark,
+    surfaceDim = SurfaceDimDark,
+    surfaceContainerLowest = SurfaceContainerLowestDark,
+    surfaceContainerLow = SurfaceContainerLowDark,
+    surfaceContainer = SurfaceContainerDark,
+    surfaceContainerHigh = SurfaceContainerHighDark,
+    surfaceContainerHighest = SurfaceContainerHighestDark,
+    inverseSurface = InverseSurfaceDark,
+    inverseOnSurface = InverseOnSurfaceDark,
+    inversePrimary = Teal40,
+    outline = OutlineDark,
     outlineVariant = OutlineVariantDark,
     error = ErrorRed,
     onError = OnErrorColor,
+    errorContainer = ErrorContainerDark,
+    onErrorContainer = OnErrorContainerDark,
 )
 
 /**
  * @param dynamicColor honours the wallpaper-derived palette on Android 12+.
- * Disable it to force the brand palette, which is what the demo video uses so
- * the colours stay consistent across devices.
+ * Left off so the brand palette stays consistent across devices, which also
+ * keeps the demo video representative of what a reviewer will see.
  */
 @Composable
 fun BmiTrackerTheme(
